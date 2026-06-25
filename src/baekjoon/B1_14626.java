@@ -1,4 +1,4 @@
-// https://www.acmicpc.net/problem/14626
+package baekjoon;// https://www.acmicpc.net/problem/14626
 // case가 몇 개 없으면 브루트 포스(Brute Force)가 더 효율적일 수 있다!
 // Mod 분배법칙 조심하자!
 

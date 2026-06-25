@@ -1,4 +1,4 @@
-// https://www.acmicpc.net/problem/2609
+package baekjoon;// https://www.acmicpc.net/problem/2609
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
