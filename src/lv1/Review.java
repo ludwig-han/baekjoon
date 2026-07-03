@@ -1,82 +1,63 @@
 package lv1;
-
+// 1. completeRow(꽉 찬 줄 개수) 구하기
+// 2. numRow(num이 속한 줄) 구하기
+// 3. 최소 answer = complelteRow - numRow
+// 4. 맨 윗 줄이 꽉찬 줄일 경우 (n % w == 0) => answer 반환
+// 5. numDistance, lastDistance 정의 (가장 왼쪽 세로 줄로부터의 거리)
+// 6. answer의 1 증가 조건:
+// ((last줄 좌향) and (numDistance > lastDistance))
+// or ((last줄 우향) and (numDistance < lastDistance))
+// or (numDistance == lastDistance)
 class Review {
     public static void main(String[] args) {
         Review rv = new Review();
-        int[][] signals = {
-                { 3, 3, 3 },
-                { 5, 4, 2 },
-                { 2, 1, 2 }
+        int[][] testCase = {
+                { 22, 6, 8 },
+                { 13, 3, 6 }
         };
-        System.out.printf("answer: %d\n", rv.solution(signals));
+
+        for (int[] testcase : testCase) {
+            int answer = rv.solution(testcase[0], testcase[1], testcase[2]);
+            System.out.printf("{ %d, %d, %d }: %d\n", testcase[0], testcase[1], testcase[2], answer);
+        }
     }
 
-    public int solution(int[][] signals) {
-        int answer = -1;
+    public int solution(int n, int w, int num) {
+        int answer = 0;
 
-        // signals의 주기 periods 구하기
-        int[] periods = new int[signals.length];
-        for (int i = 0; i < signals.length; i++) {
-            for (int j = 0; j < signals[i].length; j++) {
-                periods[i]+= signals[i][j];
-            }
-        }
+        // 1. completeRow(꽉 찬 줄 개수) 구하기
+        int completeRow = n / w;
 
-        // periods의 최소공배수 LCM 구하기
-        int LCM = periods[0];
-        for (int i = 1; i < periods.length; i++) {
-            LCM = getLCM(LCM, periods[i]);
-        }
+        // 2. numRow(num이 속한 줄) 구하기
+        int numRow = (num - 1) / w + 1;
+        int lastRow = (n - 1) / w + 1;
 
-        // LCM 크기만큼 boolean 배열 yellowLights를 선언하고 노란불을 true 값으로 채우기
-        boolean[][] yellowLights = new boolean[signals.length][LCM];
-        for (int i = 0; i < signals.length; i++) {
-            int iterateCount = LCM / periods[i];
-            for (int j = 0; j < iterateCount; j++) {
-                for (int k = 0; k < signals[i][1]; k++) {       // k: yellow lights count
-                    yellowLights[i][signals[i][0] + k + j * periods[i]] = true;
-                }
-            }
-        }
+        // 3. 최소 answer = completeRow - numRow + 1
+        answer = completeRow - numRow + 1;
 
-        //visualize(yellowLights);        // for debug
+        // 4. 맨 윗 줄이 꽉찬 줄일 경우 (n % w == 0) => answer 반환
+        if (n % w == 0) return answer;
 
-        // yellowLights가 모두 true인 index 찾기, 없으면 -1 반환하기
-        boolean isAllYellow = true;
-        for (int i = 0; i < LCM; i++) {
-            for (boolean[] booleans : yellowLights) {
-                isAllYellow &= booleans[i];
-            }
-            if (isAllYellow) {
-                answer = i + 1;
-                break;
-            } else isAllYellow = true;
-        }
+        // 5. numDistance, lastDistance 정의 (가장 왼쪽 세로 줄로부터의 거리)
+        boolean isNumDirectionLeft = (numRow % 2 == 0);
+        boolean isLastDirectionLeft = (lastRow % 2 == 0);
+
+        int numDistance = (num - 1) % w;
+        if (isNumDirectionLeft) numDistance = (w - 1) - numDistance;
+
+        int lastDistance = (n - 1) % w;
+        if (isLastDirectionLeft) lastDistance = (w - 1) - lastDistance;
+
+        // 6. answer의 1 증가 조건:
+        // ((last줄 좌향) and (numDistance > lastDistance))
+        // or ((last줄 우향) and (numDistance < lastDistance))
+        // or (numDistance == lastDistance)
+
+        if (((isLastDirectionLeft) && (numDistance > lastDistance)) ||
+                ((!isLastDirectionLeft) && (numDistance < lastDistance)) ||
+                (numDistance == lastDistance))
+            answer += 1;
 
         return answer;
-    }
-
-    public static int getGCD(int a, int b) {
-        int tmp;
-        while (b != 0) {
-            tmp = a;
-            a = b;
-            b = tmp % b;
-        }
-        return a;
-    }
-
-    public static int getLCM(int a, int b) {
-        return a / getGCD(a, b) * b;
-    }
-
-    public static void visualize(boolean[][] yellowLight){
-        for (boolean[] booleans : yellowLight) {
-            for (boolean isYellow : booleans) {
-                char ch = isYellow ? '■' : '□';
-                System.out.print(ch);
-            }
-            System.out.print("\n");
-        }
     }
 }
